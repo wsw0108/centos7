@@ -1,4 +1,4 @@
-FROM nimmis/java-centos:openjdk-8-jdk
+FROM centos:centos7.2.1511
 
 ARG user=wsw
 
@@ -13,6 +13,7 @@ make \
 gcc gcc-c++ \
 glibc-devel libstdc++-devel libstdc++-static \
 glibc-devel.i686 libstdc++-devel.i686 libstdc++-static.i686 \
+java-11-openjdk java-11-openjdk-devel \
 maven \
 cairo cairo-devel libjpeg-turbo-devel pango pango-devel giflib-devel && \
 rpm --import https://mirror.go-repo.io/centos/RPM-GPG-KEY-GO-REPO && \
