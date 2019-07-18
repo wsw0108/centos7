@@ -42,9 +42,10 @@ USER $user
 ENV HOME /home/$user
 
 # Define working directory.
-WORKDIR $HOME/projects
+WORKDIR $HOME
 
-VOLUME ["$HOME/projects", "$HOME/.m2", "$HOME/.npm"]
+#VOLUME ["$HOME/projects", "$HOME/.m2", "$HOME/.npm"]
+VOLUME ["$HOME/projects"]
 
 # Define default command.
 CMD ["bash"]
