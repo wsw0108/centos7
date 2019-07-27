@@ -8,7 +8,7 @@ LABEL "maintainer"="wsw0108@qq.com"
 
 RUN yum update -y && \
 yum install -y \
-which less file unzip \
+which less file unzip lftp sudo openssl \
 make \
 gcc gcc-c++ \
 glibc-devel libstdc++-devel libstdc++-static \
@@ -25,6 +25,7 @@ yum install -y http://opensource.wandisco.com/centos/7/git/x86_64/wandisco-git-r
 rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-WANdisco && \
 yum install -y git && \
 yum install -y epel-release && \
+rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7 && \
 yum install -y patchelf && \
 yum clean all
 
@@ -33,28 +34,27 @@ mkdir /opt/maven && \
 unzip -q -d /opt/maven apache-maven-3.6.1-bin.zip && \
 rm apache-maven-3.6.1-bin.zip
 
-ENV PATH="/opt/maven/apache-maven-3.6.1/bin:${PATH}"
-
 COPY gitconfig /etc/gitconfig
 
 # install yarn & node-gyp
 RUN npm install -g yarn
 RUN yarn global add node-gyp
 
-RUN useradd -m $user
+RUN useradd -r -m -G wheel -p "$(openssl passwd -1 ' ')" $user
 
-# USER $user
+USER $user
 
 # RUN npm config set registry https://registry.npm.taobao.org/
 
 # Set environment variables.
-# ENV HOME /home/$user
+ENV HOME /home/$user
+ENV PATH="/opt/maven/apache-maven-3.6.1/bin:${PATH}"
 
 # Define working directory.
-# WORKDIR $HOME
+WORKDIR $HOME
 
-#VOLUME ["$HOME/projects", "$HOME/.m2", "$HOME/.npm"]
-# VOLUME ["$HOME/projects"]
+#VOLUME ["$HOME/projects", "$HOME/.npm", "$HOME/.m2"]
+VOLUME ["$HOME/projects"]
 
 # Define default command.
 CMD ["bash"]
