@@ -14,11 +14,7 @@ gcc gcc-c++ \
 glibc-devel libstdc++-devel libstdc++-static \
 glibc-devel.i686 libstdc++-devel.i686 libstdc++-static.i686 \
 java-11-openjdk java-11-openjdk-devel \
-# maven \
 cairo cairo-devel libjpeg-turbo-devel pango pango-devel giflib-devel && \
-rpm --import https://mirror.go-repo.io/centos/RPM-GPG-KEY-GO-REPO && \
-curl -s https://mirror.go-repo.io/centos/go-repo.repo | tee /etc/yum.repos.d/go-repo.repo && \
-yum install -y golang && \
 curl -sL https://rpm.nodesource.com/setup_8.x | bash - && \
 yum install -y nodejs && \
 yum install -y http://opensource.wandisco.com/centos/7/git/x86_64/wandisco-git-release-7-2.noarch.rpm && \
@@ -29,16 +25,16 @@ rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7 && \
 yum install -y patchelf && \
 yum clean all
 
-RUN curl -sL http://apache.claz.org/maven/maven-3/3.6.1/binaries/apache-maven-3.6.1-bin.zip -o apache-maven-3.6.1-bin.zip && \
-mkdir /opt/maven && \
-unzip -q -d /opt/maven apache-maven-3.6.1-bin.zip && \
-rm apache-maven-3.6.1-bin.zip
-
 COPY gitconfig /etc/gitconfig
 
 # install yarn & node-gyp
 RUN npm install -g yarn
 RUN yarn global add node-gyp
+
+RUN mkdir -p /opt/goroot && \
+curl -sL https://dl.google.com/go/go1.13.4.linux-amd64.tar.gz -o /tmp/go1.13.4.linux-amd64.tar.gz && \
+tar xf /tmp/go1.13.4.linux-amd64.tar.gz -C /opt/goroot && \
+rm -f /tmp/go1.13.4.linux-amd64.tar.gz
 
 RUN useradd -r -m -G wheel -p "$(openssl passwd -1 ' ')" $user
 
@@ -48,7 +44,7 @@ USER $user
 
 # Set environment variables.
 ENV HOME /home/$user
-ENV PATH="/opt/maven/apache-maven-3.6.1/bin:${PATH}"
+ENV PATH="/opt/goroot/go/bin:${PATH}"
 
 # Define working directory.
 WORKDIR $HOME
